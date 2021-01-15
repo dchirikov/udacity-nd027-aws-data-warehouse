@@ -1,0 +1,10 @@
+jupyterlab
+ipython-sql
+boto
+boto3
+botocore
+awscli
+json5
+jsonschema
+matplotlib
+pandas
