@@ -63,11 +63,11 @@ staging_songs_table_create = ("""
 songplay_table_create = ("""
     CREATE TABLE songplays (
         songplay_id         bigint                  IDENTITY(0, 1),
-        start_time          bigint                  NOT NULL,
+        start_time          timestamp               NOT NULL,
         user_id             character varying(18)   ,
         level               character varying(10)   NOT NULL,
-        song_id             character varying(18)   NOT NULL,
-        artist_id           character varying(18)   NOT NULL,
+        song_id             character varying(18)   ,
+        artist_id           character varying(18)   ,
         session_id          integer                 NOT NULL,
         location            character varying(200)  ,
         user_agent          character varying(200)  ,
@@ -93,7 +93,7 @@ song_table_create = ("""
         song_id             character varying(18)   NOT NULL,
         title               character varying(200)  NOT NULL,
         artist_id           character varying(200)  NOT NULL,
-        year                integer                 NOT NULL,
+        year                integer                 NOT NULL DISTKEY,
         duration            double precision        NOT NULL,
 
         primary key(song_id)
@@ -114,7 +114,7 @@ artist_table_create = ("""
 
 time_table_create = ("""
     CREATE TABLE time (
-        start_time          timestamp               NOT NULL,
+        start_time          timestamp               NOT NULL SORTKEY,
         hour                smallint                NOT NULL,
         day                 smallint                NOT NULL,
         week                smallint                NOT NULL,
@@ -146,8 +146,30 @@ staging_songs_copy = (f"""
 
 songplay_table_insert = ("""
     INSERT INTO songplays (
-        SELECT e. FROM staging_events e, staging_songs s
-        WHERE e.song=s.title, e.artist=s., e.length
+        start_time,
+        user_id,
+        level,
+        song_id,
+        artist_id,
+        session_id,
+        location,
+        user_agent
+    ) (
+        SELECT  date_add('ms',e.ts,'1970-01-01'),
+                e.userId,
+                e.level,
+                s.song_id,
+                s.artist_id,
+                e.sessionId,
+                e.location,
+                e.userAgent
+        FROM staging_events e
+        LEFT OUTER JOIN staging_songs s
+        ON (
+            e.song = s.title
+            AND e.artist = s.artist_name
+            AND e.length = s.duration
+        )
     );
 """)
 
