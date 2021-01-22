@@ -6,6 +6,7 @@ config = configparser.ConfigParser()
 config.read('dwh.cfg')
 
 LOG_DATA = config.get("S3", "LOG_DATA")
+LOG_JSONPATH = config.get("S3", "LOG_JSONPATH")
 SONG_DATA = config.get("S3", "SONG_DATA")
 ARN = config.get("IAM_ROLE", "ARN")
 
@@ -25,22 +26,22 @@ staging_events_table_create= ("""
     CREATE TABLE staging_events (
         artist              character varying(200)  ,
         auth                character varying(10)   ,
-        first_name          character varying(200)  ,
+        firstName           character varying(200)  ,
         gender              character varying(1)    ,
-        items_in_session    integer                 NOT NULL,
-        last_name           character varying(200)  ,
+        itemInSession       integer                 NOT NULL,
+        lastName            character varying(200)  ,
         length              double precision        ,
         level               character varying(10)   NOT NULL,
         location            character varying(200)  ,
         method              character varying(10)   ,
         page                character varying(20)   NOT NULL,
         registration        double precision        ,
-        session_id          integer                 NOT NULL,
+        sessionId           integer                 NOT NULL,
         song                character varying(200)  ,
         status              integer                 NOT NULL,
-        ts                  timestamp               NOT NULL,
-        user_agent          character varying(200)  ,
-        user_id             character varying(18)
+        ts                  bigint                  NOT NULL,
+        userAgent           character varying(200)  ,
+        userId              character varying(18)
     );
 """)
 
@@ -62,7 +63,7 @@ staging_songs_table_create = ("""
 songplay_table_create = ("""
     CREATE TABLE songplays (
         songplay_id         bigint                  IDENTITY(0, 1),
-        start_time          timestamp               NOT NULL,
+        start_time          bigint                  NOT NULL,
         user_id             character varying(18)   ,
         level               character varying(10)   NOT NULL,
         song_id             character varying(18)   NOT NULL,
@@ -78,9 +79,9 @@ songplay_table_create = ("""
 user_table_create = ("""
     CREATE TABLE users (
         user_id             character varying(18)   NOT NULL,
-        first_name          character varying(200)  NOT NULL,
-        last_name           character varying(200)  NOT NULL,
-        gender              character varying(1)    NOT NULL,
+        first_name          character varying(200)  ,
+        last_name           character varying(200)  ,
+        gender              character varying(1)    ,
         level               character varying(5)    NOT NULL,
 
         primary key(user_id)
@@ -130,30 +131,77 @@ time_table_create = ("""
 staging_events_copy = (f"""
     copy staging_events from '{LOG_DATA}'
     credentials 'aws_iam_role={ARN}'
-    gzip delimiter ';' compupdate off region 'us-west-2';
+    json '{LOG_JSONPATH}'
+    region 'us-west-2';
 """)
 
 staging_songs_copy = (f"""
     copy staging_songs from '{SONG_DATA}'
     credentials 'aws_iam_role={ARN}'
-    gzip delimiter ';' compupdate off region 'us-west-2';
+    json 'auto ignorecase'
+    region 'us-west-2';
 """)
 
 # FINAL TABLES
 
 songplay_table_insert = ("""
+    INSERT INTO songplays (
+        SELECT e. FROM staging_events e, staging_songs s
+        WHERE e.song=s.title, e.artist=s., e.length
+    );
 """)
 
 user_table_insert = ("""
+    INSERT INTO users (
+        SELECT  userId,
+                firstName,
+                lastName,
+                gender,
+                level
+        FROM staging_events
+    );
 """)
 
 song_table_insert = ("""
+    INSERT INTO songs (
+        SELECT  song_id,
+                title,
+                artist_id,
+                year,
+                duration
+        FROM staging_songs
+    );
 """)
 
 artist_table_insert = ("""
+    INSERT INTO artists (
+        SELECT  artist_id,
+                artist_name,
+                artist_location,
+                artist_latitude,
+                artist_longitude
+        FROM staging_songs
+
+    );
 """)
 
 time_table_insert = ("""
+    CREATE TABLE #t (
+        ts      timestamp   NOT NULL
+    );
+    INSERT INTO #t (
+        SELECT date_add('ms',ts,'1970-01-01') FROM staging_events
+    );
+    INSERT INTO time (
+        SELECT  ts,
+                extract(hour from ts),
+                extract(day from ts),
+                extract(week from ts),
+                extract(month from ts),
+                extract(year from ts),
+                extract(weekday from ts)
+        FROM #t
+    );
 """)
 
 # QUERY LISTS
