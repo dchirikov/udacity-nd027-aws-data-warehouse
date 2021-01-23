@@ -212,6 +212,9 @@ artist_table_insert = ("""
     );
 """)
 
+# We can use timestamp column from songplays table but in this case
+# time table can't be created in parallel and can be created only
+# after songplays
 time_table_insert = ("""
     CREATE TABLE #t (
         ts      timestamp   NOT NULL
