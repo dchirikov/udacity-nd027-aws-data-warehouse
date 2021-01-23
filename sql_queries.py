@@ -1,3 +1,7 @@
+"""
+SQL queries for ETL pipeline
+"""
+
 import configparser
 
 
@@ -22,7 +26,7 @@ time_table_drop = "DROP TABLE IF EXISTS time;"
 
 # CREATE TABLES
 
-staging_events_table_create= ("""
+staging_events_table_create = ("""
     CREATE TABLE staging_events (
         artist              character varying(200)  ,
         auth                character varying(10)   ,
