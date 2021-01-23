@@ -68,7 +68,7 @@ songplay_table_create = ("""
     CREATE TABLE songplays (
         songplay_id         bigint                  IDENTITY(0, 1),
         start_time          timestamp               NOT NULL,
-        user_id             character varying(18)   ,
+        user_id             character varying(18)   NOT NULL,
         level               character varying(10)   NOT NULL,
         song_id             character varying(18)   ,
         artist_id           character varying(18)   ,
@@ -179,7 +179,8 @@ songplay_table_insert = ("""
 
 user_table_insert = ("""
     INSERT INTO users (
-        SELECT  userId,
+        SELECT DISTINCT
+                userId,
                 firstName,
                 lastName,
                 gender,
