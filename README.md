@@ -12,18 +12,18 @@ Table `staging_events` is a temporary table stores data about user events from S
 | auth               | character varying(10)   |                   | Authentication event                    |
 | firstName          | character varying(200)  |                   | User's first name                       |
 | gender             | character varying(1)    |                   | User's gender                           |
-| itemInSession      | integer                 | NOT NULL          | Number of events in session             |
+| itemInSession      | integer                 |                   | Number of events in session             |
 | lastName           | character varying(200)  |                   | User's last name                        |
 | length             | double precision        |                   | Duration of the song                    |
-| level              | character varying(10)   | NOT NULL          | Membership level                        |
+| level              | character varying(10)   |                   | Membership level                        |
 | location           | character varying(200)  |                   | Location of the event                   |
 | method             | character varying(10)   |                   | REST method                             |
-| page               | character varying(20)   | NOT NULL          | Requested page                          |
+| page               | character varying(20)   |                   | Requested page                          |
 | registration       | double precision        |                   | Timestamp of the registration event     |
-| sessionId          | integer                 | NOT NULL          | ID of the user's session                |
+| sessionId          | integer                 |                   | ID of the user's session                |
 | song               | character varying(200)  |                   | Song title                              |
-| status             | integer                 | NOT NULL          | HTTP status                             |
-| ts                 | bigint                  | NOT NULL          | Timestamp in UNIX format                |
+| status             | integer                 |                   | HTTP status                             |
+| ts                 | bigint                  |                   | Timestamp in UNIX format                |
 | userAgent          | character varying(200)  |                   | User-agent of the web-client            |
 | userId             | character varying(18)   |                   | ID of the user                          |
 
@@ -33,16 +33,16 @@ Table `staging_songs` is a temporary table stores data about available songs.
 
 | Column Name        | Type                    | Constraints       | Description                             |
 |--------------------|-------------------------|-------------------|-----------------------------------------|
-| num_songs          | bigint                  | NOT NULL          | Number of songs (service field)         |
-| artist_id          | character varying(18)   | NOT NULL          | ID of the artist                        |
+| num_songs          | bigint                  |                   | Number of songs (service field)         |
+| artist_id          | character varying(18)   |                   | ID of the artist                        |
 | artist_latitude    | double precision        |                   | Artist's latitude (if available)        |
 | artist_longitude   | double precision        |                   | Artist's longitude (if available)       |
-| artist_location    | character varying(200)  | NOT NULL          | Location of the artist                  |
-| artist_name        | character varying(200)  | NOT NULL          | Artist name                             |
-| song_id            | character varying(18)   | NOT NULL          | ID of the song                          |
-| title              | character varying(200)  | NOT NULL          | Song title                              |
-| duration           | double precision        | NOT NULL          | Duration of the song                    |
-| year               | integer                 | NOT NULL          | Year song is released                   |
+| artist_location    | character varying(200)  |                   | Location of the artist                  |
+| artist_name        | character varying(200)  |                   | Artist name                             |
+| song_id            | character varying(18)   |                   | ID of the song                          |
+| title              | character varying(200)  |                   | Song title                              |
+| duration           | double precision        |                   | Duration of the song                    |
+| year               | integer                 |                   | Year song is released                   |
 
 ## Production tables
 

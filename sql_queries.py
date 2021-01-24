@@ -32,18 +32,18 @@ staging_events_table_create = ("""
         auth                character varying(10)   ,
         firstName           character varying(200)  ,
         gender              character varying(1)    ,
-        itemInSession       integer                 NOT NULL,
+        itemInSession       integer                 ,
         lastName            character varying(200)  ,
         length              double precision        ,
-        level               character varying(10)   NOT NULL,
+        level               character varying(10)   ,
         location            character varying(200)  ,
         method              character varying(10)   ,
-        page                character varying(20)   NOT NULL,
+        page                character varying(20)   ,
         registration        double precision        ,
-        sessionId           integer                 NOT NULL,
+        sessionId           integer                 ,
         song                character varying(200)  ,
-        status              integer                 NOT NULL,
-        ts                  bigint                  NOT NULL,
+        status              integer                 ,
+        ts                  bigint                  ,
         userAgent           character varying(200)  ,
         userId              character varying(18)
     );
@@ -51,16 +51,16 @@ staging_events_table_create = ("""
 
 staging_songs_table_create = ("""
     CREATE TABLE staging_songs (
-        num_songs           bigint                  NOT NULL,
-        artist_id           character varying(18)   NOT NULL,
+        num_songs           bigint                  ,
+        artist_id           character varying(18)   ,
         artist_latitude     double precision        ,
         artist_longitude    double precision        ,
-        artist_location     character varying(200)  NOT NULL,
-        artist_name         character varying(200)  NOT NULL,
-        song_id             character varying(18)   NOT NULL,
-        title               character varying(200)  NOT NULL,
-        duration            double precision        NOT NULL,
-        year                integer                 NOT NULL
+        artist_location     character varying(200)  ,
+        artist_name         character varying(200)  ,
+        song_id             character varying(18)   ,
+        title               character varying(200)  ,
+        duration            double precision        ,
+        year                integer
     );
 """)
 
@@ -159,7 +159,8 @@ songplay_table_insert = ("""
         location,
         user_agent
     ) (
-        SELECT  date_add('ms',e.ts,'1970-01-01'),
+        SELECT DISTINCT
+                date_add('ms',e.ts,'1970-01-01'),
                 e.userId,
                 e.level,
                 s.song_id,
@@ -191,7 +192,8 @@ user_table_insert = ("""
 
 song_table_insert = ("""
     INSERT INTO songs (
-        SELECT  song_id,
+        SELECT DISTINCT
+                song_id,
                 title,
                 artist_id,
                 year,
@@ -202,7 +204,8 @@ song_table_insert = ("""
 
 artist_table_insert = ("""
     INSERT INTO artists (
-        SELECT  artist_id,
+        SELECT DISTINCT
+                artist_id,
                 artist_name,
                 artist_location,
                 artist_latitude,
@@ -223,7 +226,8 @@ time_table_insert = ("""
         SELECT date_add('ms',ts,'1970-01-01') FROM staging_events
     );
     INSERT INTO time (
-        SELECT  ts,
+        SELECT DISTINCT
+                ts,
                 extract(hour from ts),
                 extract(day from ts),
                 extract(week from ts),
