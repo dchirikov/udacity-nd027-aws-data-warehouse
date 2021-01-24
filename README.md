@@ -1,3 +1,9 @@
+# Project overview
+
+The goal of the project it to design ETL processing pipeline based on AWS RedShift database.
+ETL loads data from S3 bucket to 2 staging tables (`staging_events` and `staging_songs`)
+and then builds 1 fact table and 4 dimensional table to speed up analytic queries
+
 # Tables schemas
 
 ## Staging tables
@@ -64,7 +70,7 @@ Table `songplays` stores information about users' played tracks.
 | location           | character varying(200)  |                   | Location of the event                   |
 | user_agent         | character varying(200)  |                   | User-agent of the web-client            |
 
-### Dimentioanal tables
+### Dimensional tables
 
 #### `users`
 
